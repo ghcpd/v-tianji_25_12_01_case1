@@ -1,0 +1,106 @@
+jitianxiang: You are being tested on your ability to understand and explain a new codebase quickly (onboarding capability).
+
+Your Task
+You have been given access to a TypeScript project codebase. Your goal is to:
+
+• Understand the overall architecture and purpose
+• Learn how different modules interact
+• Be able to answer questions about implementation details
+• Provide practical guidance for using and modifying the code
+
+Instructions
+
+Read through the codebase systematically:
+• Start with README.md for overview
+• Examine the main entry point (src/index.ts)
+• Review core modules in src/core/
+• Understand utility modules in src/utils/
+• Study type definitions in src/types/
+
+Understand the relationships:
+• How modules depend on each other
+• Data flow through the system
+• Event‐driven patterns
+• Error handling mechanisms
+
+Be ready to answer questions about:
+• Architecture and design patterns
+• Code implementation details
+• How to use and configure the system
+• How to extend or modify functionality
+• Debugging and troubleshooting
+
+Finally, answer all 10 questions in onboarding_test_prompt.md and output the results to a file.
+
+Title: Onboarding Understanding and Explanation Assessment
+Description: Evaluate the codebase as if you are onboarding to a new project for the first time. Demonstrate your ability to understand the system quickly, explain its structure clearly, and guide others through how to use, configure, and extend it. Your analysis should reflect how effectively you can interpret unfamiliar code, identify key components, clarify interactions, anticipate user questions, and provide practical, beginner‐friendly explanations. Produce a clear and structured summary of your onboarding understanding in a JSON or Markdown file.
+
+GitHub Copilot: I'll systematically onboard to this TypeScript project by examining all key components and then answering the test questions. Let me start by reading through the codebase. 
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/Claude-haiku-4.5/README.md)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/Claude-haiku-4.5/onboarding_test_prompt.md)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/Claude-haiku-4.5/package.json)
+
+Now let me read the core source files: 
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/Claude-haiku-4.5/src/index.ts)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/Claude-haiku-4.5/src/types/index.ts)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/Claude-haiku-4.5/src/core/api-client.ts)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/Claude-haiku-4.5/src/core/data-processor.ts)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/Claude-haiku-4.5/src/core/event-bus.ts)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/Claude-haiku-4.5/src/utils/logger.ts)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/Claude-haiku-4.5/src/utils/validator.ts)
+
+Read [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/Claude-haiku-4.5/src/__tests__/data-processor.test.ts)
+
+Perfect! Now I have a complete understanding of the codebase. Let me create comprehensive answers to all 10 questions and save them to a file. 
+
+jitianxiang: @agent Try Again
+
+GitHub Copilot: Perfect! Now I have a comprehensive understanding of the codebase. Let me create a detailed response document answering all 10 questions: 
+
+jitianxiang: 继续好像卡了
+
+GitHub Copilot: I'll continue with answering the 10 test questions. Let me create the output file with my comprehensive analysis: 
+
+Created [](file:///c%3A/Users/v-tianji/Desktop/ghcpd/Claude-haiku-4.5/ONBOARDING_ANSWERS.md)
+
+Perfect! I've completed the comprehensive onboarding assessment. Here's what I've delivered:
+
+## Onboarding Assessment Complete ✅
+
+I've created a detailed document (ONBOARDING_ANSWERS.md) with complete answers to all 10 test questions:
+
+### Key Answers Provided:
+
+1. **Architecture Overview** - Main purpose, modular design, and core components
+2. **Module Interactions** - Complete code flow showing DataProcessor + EventBus interaction with state diagrams
+3. **Implementation Details** - Retry mechanism with exponential backoff in ApiClient, conditions, and examples
+4. **Error Handling** - Full error path trace from validation through event publishing
+5. **Configuration** - All ProcessorConfig options with impact analysis and tuning guide
+6. **Practical Extension** - Step-by-step implementation of new "data enrichment" event type
+7. **Debugging Scenario** - 6 common issues with debugging steps and solutions
+8. **Code Flow Analysis** - Complete end-to-end flow from DataRecord creation to ProcessingResult with detailed sequence diagram
+9. **Design Patterns** - 10 patterns identified with code examples (Pub-Sub, Singleton, Decorator, Retry, Factory, Builder, Strategy, Observer, Chain of Responsibility, Custom Errors)
+10. **Improvements** - 10 identified issues with severity levels, problems, and code-based solutions
+
+The assessment demonstrates understanding of:
+- Architecture and design patterns
+- Module dependencies and interactions  
+- Complete code execution flows
+- Configuration and customization
+- Extension mechanisms
+- Debugging techniques
+- Production-readiness considerations
+
+The output file is ready for review and contains actionable insights for improving the codebase.
+
+Made changes.
