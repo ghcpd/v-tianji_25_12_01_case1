@@ -1,0 +1,11 @@
+You are being tested on your ability to understand and explain a new codebase quickly (onboarding capability).
+
+Your Task
+You have been given access to a TypeScript project codebase. Your goal is to:
+
+• Understand the overall architecture and purpose
+• Learn how different modules interact
+• Be able to answer questions about implementation details
+• Provide practical guidance for using and modifying the code
+
+Instructions
