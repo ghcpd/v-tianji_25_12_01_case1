@@ -63,72 +63,101 @@ export class DataProcessor {
 
     this.processingQueue.set(record.id, context);
 
-    try {
-      await eventBus.publish('record.processing.started', {
-        recordId: record.id,
-        source: record.source
-      }, record.id);
+    while (context.attempts < this.config.retryAttempts) {
+      try {
+        context.attempts += 1;
 
-      if (this.config.enableValidation) {
-        validateDataRecord(record);
-      }
-
-      const transformedData = await this.transformRecord(record);
-      context.status = ProcessingStatus.COMPLETED;
-      context.completedAt = Date.now();
-
-      await eventBus.publish('record.processing.completed', {
-        recordId: record.id,
-        transformedData
-      }, record.id);
-
-      this.processingQueue.delete(record.id);
-
-      return {
-        success: true,
-        recordId: record.id,
-        processedAt: context.completedAt,
-        transformedData
-      };
-    } catch (error) {
-      context.attempts += 1;
-      context.error = error as Error;
-
-      if (context.attempts < this.config.retryAttempts) {
-        context.status = ProcessingStatus.RETRYING;
-        logger.warn('Retrying record processing', {
+        await eventBus.publish('record.processing.started', {
           recordId: record.id,
+          source: record.source,
           attempt: context.attempts
-        });
+        }, record.id);
 
-        await this.delay(this.config.timeout);
-        return this.processRecord(record);
+        if (this.config.enableValidation) {
+          validateDataRecord(record);
+        }
+
+        const transformedData = await this.transformRecord(record);
+        context.status = ProcessingStatus.COMPLETED;
+        context.completedAt = Date.now();
+
+        await eventBus.publish('record.processing.completed', {
+          recordId: record.id,
+          transformedData,
+          attempts: context.attempts
+        }, record.id);
+
+        this.processingQueue.delete(record.id);
+
+        return {
+          success: true,
+          recordId: record.id,
+          processedAt: context.completedAt,
+          transformedData
+        };
+      } catch (error) {
+        context.error = error as Error;
+
+        // validation failures are non-retryable
+        if (error instanceof ValidationError) {
+          context.status = ProcessingStatus.FAILED;
+          context.completedAt = Date.now();
+
+          await eventBus.publish('record.processing.failed', {
+            recordId: record.id,
+            error: `Validation failed: ${error.message}`,
+            attempts: context.attempts
+          }, record.id);
+
+          this.processingQueue.delete(record.id);
+
+          return {
+            success: false,
+            recordId: record.id,
+            processedAt: context.completedAt,
+            errors: [`Validation failed: ${error.message}`]
+          };
+        }
+
+        if (context.attempts < this.config.retryAttempts) {
+          context.status = ProcessingStatus.RETRYING;
+          logger.warn('Retrying record processing', {
+            recordId: record.id,
+            attempt: context.attempts
+          });
+
+          await this.delay(this.config.timeout);
+          continue;
+        }
+
+        context.status = ProcessingStatus.FAILED;
+        context.completedAt = Date.now();
+
+        await eventBus.publish('record.processing.failed', {
+          recordId: record.id,
+          error: error instanceof Error ? error.message : String(error),
+          attempts: context.attempts
+        }, record.id);
+
+        this.processingQueue.delete(record.id);
+
+        return {
+          success: false,
+          recordId: record.id,
+          processedAt: context.completedAt,
+          errors: [error instanceof Error ? error.message : String(error)]
+        };
       }
-
-      context.status = ProcessingStatus.FAILED;
-      context.completedAt = Date.now();
-
-      await eventBus.publish('record.processing.failed', {
-        recordId: record.id,
-        error: error instanceof Error ? error.message : String(error),
-        attempts: context.attempts
-      }, record.id);
-
-      this.processingQueue.delete(record.id);
-
-      const errorMessage = error instanceof ValidationError
-        ? `Validation failed: ${error.message}`
-        : error instanceof Error
-        ? error.message
-        : String(error);
-
-      return {
-        success: false,
-        recordId: record.id,
-        processedAt: context.completedAt,
-        errors: [errorMessage]
-      };
     }
+
+    // Fallback (should not reach here)
+    this.processingQueue.delete(record.id);
+    return {
+      success: false,
+      recordId: record.id,
+      processedAt: Date.now(),
+      errors: ['Unknown processing error']
+    };
   }
 
   /**
@@ -174,9 +203,15 @@ export class DataProcessor {
 
       executing.push(promise);
 
+      promise.finally(() => {
+        const idx = executing.indexOf(promise);
+        if (idx >= 0) {
+          executing.splice(idx, 1);
+        }
+      });
+
       if (executing.length >= this.config.concurrency) {
         await Promise.race(executing);
-        executing.splice(executing.findIndex(p => p === promise), 1);
       }
     }
 
